@@ -1,0 +1,58 @@
+# Deployment + Service da aplicação Python usada como alvo do teste de HPA.
+# Idêntico ao manifesto da implantação local, exceto pelo namespace e pela
+# origem da imagem: aqui, o Amazon ECR, já que os nós gerenciados do EKS
+# não têm acesso ao daemon Docker da máquina de desenvolvimento.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: trab1-eks
+spec:
+  selector:
+    matchLabels:
+      app: webapp             # usado pelo Service e pelo HPA para localizar os Pods
+  replicas: 1                  # ponto de partida; o HPA assume o controle depois de criado
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: webapp
+          # URI do repositório ECR, 
+          image: 504895205502.dkr.ecr.us-east-1.amazonaws.com/psi5120-trab1-app
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: WORK_ITERATIONS
+              value: "2000000"   # mesmo valor calibrado na implantação local
+          resources:
+            # "requests" é o valor usado pelo HPA como referência de 100% de utilização;
+            # sem requests definidos, o HPA não consegue calcular percentual algum.
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-svc
+  namespace: trab1-eks
+  labels:
+    app: webapp
+spec:
+  selector:
+    app: webapp   # liga o Service aos Pods do Deployment via label, sem depender de IPs fixos
+  ports:
+    - port: 80
+      targetPort: 8080

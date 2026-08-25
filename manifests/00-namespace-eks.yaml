@@ -1,0 +1,5 @@
+# Namespace dedicado ao Trabalho Avaliativo 1 na implantação em nuvem (EKS).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trab1-eks

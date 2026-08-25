@@ -1,0 +1,21 @@
+# HorizontalPodAutoscaler na API estável autoscaling/v2, que permite declarar
+# a métrica de forma explícita (diferente da sintaxe resumida de "kubectl autoscale").
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webapp-hpa
+  namespace: trab1-local
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: webapp               # objeto controlado: o HPA edita o campo replicas deste Deployment
+  minReplicas: 1               # Número mínimo de réplicas desejadas
+  maxReplicas: 5               # Número máximo de réplicas desejadas
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50   # alvo: 50% do request de CPU (100m) por Pod, em média
