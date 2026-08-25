@@ -5,7 +5,7 @@
 
 **Trabalho Avaliativo 1** 
 
-**Aluno:** Matheus Cavini — nº USP 12550494 
+**Aluno:** Matheus Latorre Cavini — nº USP 12550494 
 
 **Data:** 24/08/2026
 
@@ -757,7 +757,7 @@ while true; do date +%T; kubectl get hpa webapp-hpa -n trab1-eks; sleep 10; done
 
 ### 4.6 Evidências coletadas — implantação em nuvem
 
-Assim como na Parte A, as evidências a seguir documentam a prontidão do ambiente, o estado do HPA antes da carga, o ciclo completo de escalonamento, os limites de capacidade do node group e o acesso funcional à aplicação.
+Assim como na Parte A, as evidências a seguir documentam a prontidão do ambiente, o estado do HPA antes da carga, o ciclo completo de escalonamento e os limites de capacidade do node group.
 
 _(EE = Evidência do EKS)_
 
@@ -898,7 +898,7 @@ Em ambos os ambientes, o ciclo completo (carga e descarga) foi conduzido uma ún
 - O endpoint `/work` roda em `ThreadingHTTPServer`, sujeito ao GIL do Python: cada Pod não paraleliza a carga em múltiplos núcleos, mas isso não compromete o teste, já que o HPA reage à utilização de CPU por Pod individualmente, não à capacidade de concorrência interna de cada processo.
 - Em ambos os ambientes, o ciclo de carga e descarga foi conduzido uma única vez; os tempos de reação reportados (Seções 3.7 e 4.6) são medições pontuais, não médias estatísticas de múltiplas repetições.
 - A granularidade de amostragem das leituras do HPA não foi idêntica entre os dois ambientes na fase final do ciclo: a Parte A manteve leituras a cada ~10-30s até o fim, enquanto a Parte B teve lacunas maiores (de alguns minutos) na fase de descarga, o que limita a precisão da comparação de tempo de scale-down entre os ambientes.
-- No EKS, o node group com um único `t3.medium` comportou as cinco réplicas do HPA sem atingir seu limite de capacidade nesta execução (EE4); o comportamento em caso de capacidade insuficiente não foi observado empiricamente.
+- No EKS, o node group com um único `t3.medium` comportou as cinco réplicas do HPA sem atingir seu limite de capacidade nesta execução; o comportamento em caso de capacidade insuficiente não foi observado empiricamente.
 - Nenhuma das duas implantações usa Cluster Autoscaler: o HPA demonstrado neste trabalho escala apenas Pods, não nodes, o que está fora do escopo definido para o trabalho.
 
 ---
